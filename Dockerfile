@@ -6,6 +6,6 @@ COPY package.json ./
 
 RUN npm install
 
-COPY . .
+COPY . ./
 
-CMD [ "npm", "run", "start"]
+CMD [ "npx", "ts-node", "src/index.ts"]
