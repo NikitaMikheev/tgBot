@@ -268,24 +268,21 @@ export default class Bot {
                         };
                     };
 
-                    if (domensArray.length === 0) {
-                        await this.client.sendMessage(String(process.env.API_BOT_CHAT_ID), 'В ближайшие 30 дней ни один из доменов не истекает');
+                    let message: string = '';
+                    for (let domen of domensArray) { // цикл проходит по каждому элементу массива и формирует сообщение для отправки в телеграмм
+                        const newMessage = this.createMessage(domen);
+
+                        if (message.length + newMessage.length > 4096) { // ограничение на 1 сообщение в телеграмм составляет 4096 символов. Сравниваем подготовленный фрагмент сообщения и уже сформированные части
+                            await this.client.sendMessage(String(process.env.API_BOT_CHAT_ID), message);
+                            message = newMessage;  
+                        }
+
+                        else {
+                            message += newMessage;
+                        };
                     }
 
-                    else {
-                        let message: string = '';
-                        for (let domen of domensArray) { // цикл проходит по каждому элементу массива и формирует сообщение для отправки в телеграмм
-                            const newMessage = this.createMessage(domen);
-    
-                            if (message.length + newMessage.length > 4096) { // ограничение на 1 сообщение в телеграмм составляет 4096 символов. Сравниваем подготовленный фрагмент сообщения и уже сформированные части
-                                await this.client.sendMessage(String(process.env.API_BOT_CHAT_ID), message);
-                                message = newMessage;  
-                            }
-    
-                            else {
-                                message += newMessage;
-                            };
-                        }
+                    if (message.length !== 0) {
                         this.client.sendMessage(String(process.env.API_BOT_CHAT_ID), message);
                     }
                 }
